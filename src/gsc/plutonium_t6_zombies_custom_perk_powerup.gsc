@@ -377,44 +377,6 @@ perk_hud_create( perk, custom, print )
                 self iprintln("This Perk saves players current loadout after player is downed");
             }
             break;
-        case "MULE":
-            if(getdvar( "mapname" ) == "zm_prison")
-            {
-                shader = "specialty_additionalprimaryweapon_zombies";
-            }
-            else
-            {
-                color = (0, 0, 0);
-                color1 = (0, 1, 0);
-                background_shader = "specialty_doubletap_zombies";
-                shader = "menu_mp_weapons_1911";
-            }
-            if(print)
-			{
-				self iprintln("^9Mule Kick");
-				wait 0.2;
-				self iprintln("This Perk enables additional primary weapon slot for player. ");
-			}
-            break;
-        case "PHD_FLOPPER":
-            if(getdvar( "mapname" ) == "zm_prison")
-            {
-                shader = "specialty_divetonuke_zombies";
-            }
-            else
-            {
-                color = (0, 0, 0);
-                color1 = (1, 0, 1);
-                background_shader = "specialty_doubletap_zombies";
-                shader = "hud_grenadeicon";
-            }
-            if(print)
-			{
-				self iprintln("^9PhD Flopper");
-				wait 0.2;
-				self iprintln("This Perk removes explosion and fall damage also player creates explosion when dive to prone.");
-			}
-            break;
         case "Ethereal_Razor":
             color = (1, 0, 0);
             color1 = (1,1,1);
@@ -482,7 +444,7 @@ perk_hud_create( perk, custom, print )
 				self iprintln("This Perk allows shield block damage from all directions when in use.");
         	}
             break;
-        case "ELECTRIC_CHERRY":
+        case "Electric_Cherry":
             background_shader = "specialty_doubletap_zombies";
             shader = "zombies_rank_5";
             color = (0 ,0, 1);
@@ -495,7 +457,7 @@ perk_hud_create( perk, custom, print )
 				self iprintln("This Perk creates an electric shockwave around the player whenever they reload.");
         	}
             break;
-        case "WIDOWS_WINE":
+        case "Widows_Wine":
             background_shader = "specialty_doubletap_zombies";
             shader = "zombies_rank_3";
             self thread ww_nades();
@@ -508,7 +470,7 @@ perk_hud_create( perk, custom, print )
 				self iprintln("This Perk damages zombies around the player when player is hit and grenades are upgraded.");
         	}
             break;
-        case "Burn_Heart":
+        case "Burnt_Heart":
             background_shader = "specialty_doubletap_zombies";
             shader = "zombies_rank_1";
             color = (1,0,0);
@@ -521,7 +483,7 @@ perk_hud_create( perk, custom, print )
 				self iprintln("This Perk removes lava damage. (add more abilitys)");
 			}
             break;
-        case "deadshot":
+        case "Deadshot":
             background_shader = "specialty_doubletap_zombies";
             shader = "killiconheadshot";
             color = (0,0,0);
@@ -668,26 +630,11 @@ give_random_perk()
             perks[perks.size] = "Tombstone";
         }
     }
-
-    if(getdvar( "mapname" ) != "zm_tomb" )
-    {
-        if(!self hascustomperk("PHD_FLOPPER"))
-        {
-            perks[perks.size] = "PHD_FLOPPER";
-        }
-    }
     if(getdvar( "mapname" ) == "zm_transit" || getdvar( "mapname" ) == "zm_tomb" || getdvar( "mapname" ) == "zm_prison")
     {
         if(!self hascustomperk("Victorious_Tortoise"))
         {
             perks[perks.size] = "Victorious_Tortoise";
-        }
-    }
-    if(getdvar( "mapname" ) == "zm_transit" || getdvar( "mapname" ) == "zm_nuked" || getdvar( "mapname" ) == "zm_prison")
-    {
-        if(!self hascustomperk("MULE"))
-        {
-            perks[perks.size] = "MULE";
         }
     }
     if(getdvar( "mapname" ) == "zm_transit" || getdvar( "mapname" ) == "zm_nuked" || getdvar( "mapname" ) == "zm_buried" || getdvar( "mapname" ) == "zm_highrise" )
@@ -718,9 +665,9 @@ give_random_perk()
     }
     if(getdvar( "mapname" ) == "zm_transit")
     {
-        if(!self hascustomperk("Burn_Heart"))
+        if(!self hascustomperk("Burnt_Heart"))
         {
-            perks[perks.size] = "Burn_Heart";
+            perks[perks.size] = "Burnt_Heart";
         }
     }
 	if(!self hascustomperk("Dying_Wish"))
@@ -848,32 +795,6 @@ damage_callback( einflictor, eattacker, idamage, idflags, smeansofdeath, sweapon
             }
 		}
     }
-    if(self hascustomperk("PHD_FLOPPER") || self hasperk("specialty_flakjacket"))
-	{
-		if( smeansofdeath == "MOD_FALLING" )
-		{
-			if(isDefined( self.divetoprone ) && self.divetoprone == 1 )
-			{
-				if ( getdvar("mapname") == "zm_buried" )
-        			self thread divetonuke_explode_network_optimized( self.origin, 300, 5000, 1000, "MOD_GRENADE_SPLASH" );
-    			else
-					radiusdamage( self.origin, 300, 5000, 1000, self, "MOD_GRENADE_SPLASH" );
-
-                if( getdvar( "mapname" ) == "zm_buried" || getdvar( "mapname" ) == "zm_tomb" )
-                    fx = level._effect[ "divetonuke_groundhit"];
-                else
-                    fx = loadfx( "explosions/fx_default_explosion" );
-
-                self playsound( "zmb_phdflop_explo" );
-                playfx( fx, self.origin );
-			}
-			return 0;
-		}
-		if(smeansofdeath == "MOD_GRENADE" || smeansofdeath == "MOD_GRENADE_SPLASH" || eattacker == self && !smeansofdeath == "MOD_UNKNOWN")
-		{
-			return 0;
-		}
-	}
     if( isDefined( eAttacker.is_zombie ) && eAttacker.is_zombie && self hascustomperk("Victorious_Tortoise") )
     {
         if(self getcurrentweapon() == "riotshield_zm" || self getcurrentweapon() == "alcatraz_shield_zm" || self getcurrentweapon() == "tomb_shield_zm")
@@ -932,24 +853,6 @@ damage_callback( einflictor, eattacker, idamage, idflags, smeansofdeath, sweapon
        	return [[level.first_player_damage_callback]](einflictor, eattacker, idamage, idflags, smeansofdeath, sweapon, vpoint, vdir, shitloc, psoffsettime);
     }
     return idamage;
-}
-
-custom_get_player_weapon_limit( player )
-{
-    weapon_limit = 2;
-    if( player hascustomperk("MULE") || player hasperk("specialty_additionalprimaryweapon"))
-    {
-        weapon_limit = 3;
-    }
-	else 
-	{
-		weapons = self getWeaponsListPrimaries();
-		if(weapons.size > weapon_limit)
-		{
-			self takeWeapon(weapons[2]);
-		}
-	}
-    return weapon_limit;
 }
 
 start_er() 
@@ -1021,10 +924,10 @@ dying_wish_checker()
         self.perk_hud[ "Dying_Wish" ].alpha = 0.4;
         self.dying_wish_uses++;
         self.dying_wish_on_cooldown = 1;
-        delay = 300 + (self.dying_wish_uses * 30);
-        if(delay >= 600)
+        delay = 30 + (self.dying_wish_uses * 30);
+        if(delay >= 60)
         {
-            delay = 600;
+            delay = 60;
         }
         wait delay;
     }
@@ -2501,42 +2404,5 @@ custom_tombstone_revived( player )
         }
 
         wait 0.05;
-    }
-}
-
-//--^-Custom-Tombstone-^--------------------------------------------------------------------------------------------------------------------------------
-
-divetonuke_explode_network_optimized( origin, radius, max_damage, min_damage, damage_mod )
-{
-    self endon( "disconnect" );
-    a_zombies = get_array_of_closest( origin, get_round_enemy_array(), undefined, undefined, radius );
-    network_stall_counter = 0;
-
-    if ( isdefined( a_zombies ) )
-    {
-        for ( i = 0; i < a_zombies.size; i++ )
-        {
-            e_zombie = a_zombies[i];
-
-            if ( !isdefined( e_zombie ) || !isalive( e_zombie ) )
-                continue;
-
-			if ( isdefined( level.sloth ) && e_zombie == level.sloth ) 
-			    continue;
-			
-			if ( isdefined( e_zombie.is_avogadro ) && e_zombie.is_avogadro ) 
-			    continue;
-
-            dist = distance( e_zombie.origin, origin );
-            damage = min_damage + ( max_damage - min_damage ) * ( 1.0 - dist / radius );
-            e_zombie dodamage( damage, e_zombie.origin, self, self, 0, damage_mod );
-            network_stall_counter--;
-
-            if ( network_stall_counter <= 0 )
-            {
-                wait_network_frame();
-                network_stall_counter = randomintrange( 1, 3 );
-            }
-        }
     }
 }
